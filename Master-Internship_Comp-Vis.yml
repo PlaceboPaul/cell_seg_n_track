@@ -1,0 +1,17 @@
+name: bmcvpython2021
+channels:
+ - anaconda
+ - conda-forge
+ - bioconda
+ - pytorch
+dependencies:
+  - python>=3.6
+  - ipython
+  - jupyter
+  - numpy
+  - scipy
+  - scikit-image=0.15
+  - tifffile
+  - matplotlib
+  - pillow
+  - dill
