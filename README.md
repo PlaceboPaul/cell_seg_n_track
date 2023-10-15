@@ -1,4 +1,4 @@
-# bioquant_rohr_internship
+![4_trajectories_cor](https://github.com/PlaceboPaul/bioquant_rohr_internship/assets/64301914/fd0e4ed4-f7aa-485e-8bfd-89f5fb3f8c34)# bioquant_rohr_internship
 
 ## Project Overview
 This project was conducted in the Biomedical Computer Vision (BMCV)
@@ -18,7 +18,7 @@ practical usability.
 
 **Segmentation**: In *segmentation.py*, segmentation approaches based on edge detection, Otsu's method and machine learning (support vector machine) were compared in terms of their performance on the data.
 Ground truth images allowed for evaluation using dice and jaccard scores on a whole image as well as a per-object level using the *segmetrics.py-master* package developed in the BMCV group.
-#![alt text](http://url/to/img.png)
+![Three segmentation methods](https://github.com/PlaceboPaul/bioquant_rohr_internship/blob/main/figures/3_three-methods-cor.png)
 
 ### Cell Tracking
 **Task**: Utilize the Canny-based segmentation approach, which yielded the best result, to track nuclei in the temporal image sequence at hand.
@@ -26,4 +26,4 @@ Ground truth images allowed for evaluation using dice and jaccard scores on a wh
 **Tracking**: In *tracking.py* centroids of nuclei were extracted and listed in a data frame including spatial information. Nuclei labels were passed on to the respective nearest neighbor of the next frame based on Euclidean distance.
 
 **Vizualizatio**: Cell tracking was vizualized and evaluated using the *opencv-python* package. The code is available in *tracking_visuals.py*.
-#![alt text](http://url/to/img.png)
+![Trajectories](https://github.com/PlaceboPaul/bioquant_rohr_internship/assets/64301914/3bf0f591-8a52-432d-8787-9fe18f5d9355)
