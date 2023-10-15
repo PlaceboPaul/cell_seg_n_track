@@ -25,5 +25,5 @@ Ground truth images allowed for evaluation using dice and jaccard scores on a wh
 
 **Tracking**: In *tracking.py* centroids of nuclei were extracted and listed in a data frame including spatial information. Nuclei labels were passed on to the respective nearest neighbor of the next frame based on Euclidean distance.
 
-**Vizualizatio**: Cell tracking was vizualized and evaluated using the *opencv-python* package. The code is available in *tracking_vizuals.py*.
+**Vizualizatio**: Cell tracking was vizualized and evaluated using the *opencv-python* package. The code is available in *tracking_visuals.py*.
 #![alt text](http://url/to/img.png)
