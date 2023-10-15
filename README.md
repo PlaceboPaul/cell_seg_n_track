@@ -1,4 +1,4 @@
-![4_trajectories_cor](https://github.com/PlaceboPaul/bioquant_rohr_internship/assets/64301914/fd0e4ed4-f7aa-485e-8bfd-89f5fb3f8c34)# bioquant_rohr_internship
+# bioquant_rohr_internship
 
 ## Project Overview
 This project was conducted in the Biomedical Computer Vision (BMCV)
