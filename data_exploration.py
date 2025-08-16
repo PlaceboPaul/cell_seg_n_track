@@ -22,13 +22,13 @@ import matplotlib.pyplot as plt
 
 ## Loading Data ##
 #We got fluorescence microscopy images with 16 bit on grayscale in TIFF (.tif)
-#ground truth (gt) and st (silver truth??) given.
+#ground truth (gt) and st (silver truth) given.
 #gt starts at 12 and skips many images while st contains all
 #
 t000 = io.imread("01/t000.tif"); t091 = io.imread("01/t091.tif") # reads the image in original settings:16 bit grayscale image
 t000_norm = t000 - t000.min(); t091_norm = t091 - t091.min()
 t000_norm1 = np.uint8(t000/t000.max()*255)
-t000_norm2 = np.uint8(np.round(t000/t000.max()*255)) #why is this worse than norm1. in norm1 everything is round down
+t000_norm2 = np.uint8(np.round(t000/t000.max()*255)) 
 t000_norm_optimal = t000 - t000.min();  t000_norm_optimal = np.uint8(np.round(t000_norm_optimal/t000_norm_optimal.max()*255)) # first let t000 begin by 0 so you get full range 0-255 in 8 bit image then
 t000_cv = cv.imread("01/t000.tif", cv.IMREAD_GRAYSCALE) # converts into 8 bit grayscale by value//256 meaning round DOWN
 t000_8bit = img_as_ubyte(t000) # value//256 meaning round DOWN. But why is round down ok?
@@ -45,11 +45,6 @@ plt.figure(); plt.imshow(t000_8bit,"gray"), plt.colorbar(), plt.title("t000 img_
 plt.figure(); plt.imshow(t000_gt, "gray"); plt.title("t000_gt")
 plt.figure(); plt.imshow(t000_gt_8, "gray"); plt.title("t000_gt_8 binary") #binary image
 ## Loading Data ##
-
-## Todo
-#
-#
-##
 
 
 
@@ -131,13 +126,13 @@ fig,ax = plt.subplots(nrows=5,ncols=4) #figsize=(20,5)
 #
 for i in range(len(image_list)):
     img = image_list[i]; img = np.uint8(img / img.max() * 255)
-    gt = gt_list[i]; gt = np.uint8(gt / gt.max() * 255) > 0 # forgot np.round()!!!!! add and compare resulting dices
+    gt = gt_list[i]; gt = np.uint8(gt / gt.max() * 255) > 0 
     T = threshold_otsu(img); img_seg = img > T
     dice = compute_dice(img_seg, gt)
     ax[i, 0].imshow(img,"gray"); ax[i, 0].set_title(f't0{str(i).zfill(2)}'); ax[i, 0].axis("off")
-    ax[i, 1].hist(img.flatten(), bins=20); ax[i, 1].set_yticks([]); ax[i, 1].axvline(T, color='r') # no idea why first plot has decimal x axis
+    ax[i, 1].hist(img.flatten(), bins=20); ax[i, 1].set_yticks([]); ax[i, 1].axvline(T, color='r') 
     ax[i, 2].imshow(img_seg,"gray"); ax[i, 2].set_title(f'Segmentation otsu = {T}'); ax[i, 2].axis("off")
-    ax[i, 3].imshow(gt,"gray"); ax[i, 3].set_title(f'Ground Truth - Dice = {dice}'); ax[i, 3].axis("off") # the gts seem very inconsistent
+    ax[i, 3].imshow(gt,"gray"); ax[i, 3].set_title(f'Ground Truth - Dice = {dice}'); ax[i, 3].axis("off")
 
 
 
@@ -151,35 +146,26 @@ from skimage.feature import canny
 from skimage.morphology import binary_opening, binary_closing, binary_erosion, flood_fill
 import matplotlib.pyplot as plt
 
-# https://www.youtube.com/watch?v=cToG83MLkqw&ab_channel=KnowledgeAmplifier
-# filter mask = bwareopen(imopen(imfill(imclose(edge(image, "canny"), strel("line",3,0)),"holes"), strel(ones(3,3))),1500)
-    # edge("canny") canny operator --> skimage.featue.canny(img, sigma = 1) one by default
-# https://scikit-image.org/docs/dev/api/skimage.morphology.html for following morphology operations
-    # imclose close gaps in edges if there are any so that an edge encloses an object completely (dilation followed by erosion) --> skimage.morphology.binary_closing(image)
-    # imfill fills areas enclosed by edges
-    # imopen (erosion followed by dilation) cut off areas that are connected to object of interest via thin channels --> skimage.morphology.binary_opening(image)
-    # bwareopen removes objects that contain less than given pixel amount --> cleaned = morphology.remove_small_objects(arr, min_size=2, connectivity = 0) default zero connectivity
-                                                                        # --> cleaned = morphology.remove_small_holes(cleaned, min_size=2, connectivity=0)
-
 
 # translated in python functions
-t000_canny = canny(t000, sigma=1, low_threshold=35, high_threshold=75) # not 100% sure what thresholds mean but this gives the best result. 100,200 misses many nuclei and high_thresh below 60 includes background
+t000_canny = canny(t000, sigma=1, low_threshold=35, high_threshold=75)
 plt.figure(); plt.imshow(t000_canny, "gray"); plt.title("t000_canny, sigma=1")
 #close gaps in nuclei boundaries
 t000_closed = binary_closing(t000_canny, selem=np.ones((5,5)))
-plt.figure(); plt.imshow(t000_closed, "gray"); plt.title("t000_closed 5,5") # 3,3 is good but 5,5 yields one more nucleus because it closes the necessary gap and it increases dice
+plt.figure(); plt.imshow(t000_closed, "gray"); plt.title("t000_closed 5,5")
 #invert image
 t000_invert = np.invert(t000_closed); plt.figure(); plt.imshow(t000_invert, "gray"); plt.title("t000_invert")
 # flood background of nuclei to get only nuclei inverted and background the same as original
-t000_flood = flood_fill(t000_invert.astype("int"), (0, 0), 0, connectivity=1) #conncectivity 1 so that diagonal pixels are not seen as connected
-plt.figure(); plt.imshow(t000_flood, "gray"); plt.title("t000 from 0/0 with 0") # !!! What do we do if a nuclei is in the corner????? after flood we should have <10% foreground pixels
+t000_flood = flood_fill(t000_invert.astype("int"), (0, 0), 0, connectivity=1) # conncectivity 1 so that diagonal pixels are not seen as connected
+plt.figure(); plt.imshow(t000_flood, "gray"); plt.title("t000 from 0/0 with 0") 
 # combine t000_closed and t000_flood
 t000_filled = t000_closed + t000_flood
 t000_fil_open = binary_opening(t000_filled, selem=np.ones((3,3))) #
-plt.figure(); plt.imshow(t000_fil_open, "gray"); plt.title("t000_filled") # very nice. size is good with gt and separations of nuclei clear. lost two nuclei though... #opening is better than erosion in terms of dice
+plt.figure(); plt.imshow(t000_fil_open, "gray"); plt.title("t000_filled") 
 evaluate_seg(t000_fil_open,t000_gt) #0.925 very nice , with the last image that has more nuclei its slightly less: 0.89
-### Put it in a function
 
+
+### Put it in a function
 def canny_segmentation(img):
     img_canny = canny(img, sigma=1, low_threshold=35, high_threshold=75)
     img_closed = binary_closing(img_canny, selem=np.ones((3, 3)))
@@ -188,9 +174,9 @@ def canny_segmentation(img):
         img_flood = flood_fill(img_invert.astype("int"), (i, 0), 0, connectivity=1)
         if np.sum(img_flood)/(700*1100) < 0.1:
             break #if condition is fulfilled, flood_fill was successful and no nuclei was in the way. Stop the loop then.
-    return clear_border(binary_opening(img_closed + img_flood)) # added clear_border
+    return clear_border(binary_opening(img_closed + img_flood))
 
-t001 = io.imread("01/t001.tif"); t001 = t001-t001.min() # it doesn't make a difference somehow if it starts at 0 or 30.000. So the thresholds don't refer to intensity
+t001 = io.imread("01/t001.tif"); t001 = t001-t001.min()
 t001_filled = canny_segmentation(t001)
 t001_gt = io.imread("01_ST/SEG/man_seg001.tif")
 plt.figure(); plt.imshow(t001_filled, "gray"); plt.title("t001_filled") #ok
@@ -198,6 +184,7 @@ compute_dice(t001_filled, t001_gt>0) #0.90 but with clear border it is 0.92!!!!!
 #
 t000_canny = canny_segmentation(t000_norm); plt.figure(); plt.imshow(t000_canny, "gray"); plt.title("t000 Canny Segmentation")
 t091_canny = canny_segmentation(t091_norm); plt.figure(); plt.imshow(t091_canny, "gray"); plt.title("t091 Canny Segmentation")
+
 
 
 ## Machine Learning Segmentation ##
@@ -220,7 +207,7 @@ def create_data_matrix(img, patch_size, patch="blocks",step=1):
     if patch == "blocks":
         data_matrix = np.array([j.flatten() for i in view_as_blocks(img, patch_size) for j in i]) # each i is a row of many blocks so j extracts each block
     elif patch == "windows":
-        data_matrix = np.array([j.flatten() for i in view_as_windows(img, patch_size,step=step) for j in i]) #step determines how the windows are spaced
+        data_matrix = np.array([j.flatten() for i in view_as_windows(img, patch_size,step=step) for j in i]) # step determines how the windows are spaced
     return data_matrix
 #
 def create_gt_labels_vector(gt, patch_size, patch="blocks",step=1):
@@ -234,7 +221,7 @@ def create_gt_labels_vector(gt, patch_size, patch="blocks",step=1):
 def concat_dms_lvs(dms_list, lvs_list): # lists of dms and lvs you want to have concatenated
     first_dm = dms_list[0]
     first_lv = lvs_list[0]
-    dms_conc = first_dm[first_lv != 0]; lvs_conc = first_lv[first_lv != 0] # !subset with lv being not zero !
+    dms_conc = first_dm[first_lv != 0]; lvs_conc = first_lv[first_lv != 0]
     for i in range(1,len(dms_list)):
         new_dm = dms_list[i]; new_lv = lvs_list[i]
         dms_conc = np.concatenate((dms_conc, new_dm[new_lv != 0]), axis=0)
@@ -245,12 +232,12 @@ def predict_image(img, patch_size, clf, patch = "blocks", step=1):
     result = np.zeros(img.shape).astype(bool) #empty bool 2D array
     if patch == "blocks":
         patches = view_as_blocks(result, patch_size)
-        dm = create_data_matrix(img, patch_size, patch=patch)  # dm of image as input for the model which throws out a label vector
+        dm = create_data_matrix(img, patch_size, patch=patch)  
     elif patch == "windows":
         patches = view_as_windows(result, patch_size, step=step)
         dm = create_data_matrix(img, patch_size, patch=patch, step=step)
-    predicted_lv = clf.predict(dm).reshape(patches.shape[0:2]) # we put lv in same shape as dm in order to use next step
-    patches[predicted_lv == 1] = True # works since lv and dm now have same shape
+    predicted_lv = clf.predict(dm).reshape(patches.shape[0:2]) 
+    patches[predicted_lv == 1] = True 
     return result
 #
 def machine_learn_train(train_imgs, train_gts, patch_size, patch="blocks", step=1):
@@ -259,7 +246,7 @@ def machine_learn_train(train_imgs, train_gts, patch_size, patch="blocks", step=
     for i in range(len(train_imgs)):
         dms.append(create_data_matrix(train_imgs[i], patch_size=patch_size, patch=patch, step=step))
         lvs.append(create_gt_labels_vector(train_gts[i], patch_size=patch_size, patch=patch, step=step))
-    return concat_dms_lvs(dms, lvs) # trian_dms, train_lvs = concat_dms_lvs(dms, lvs)
+    return concat_dms_lvs(dms, lvs)
     #
 #clf = make_pipeline(StandardScaler(), SVC(class_weight='balanced', gamma=0.1))
 #clf.fit(train_dms, train_lvs)
@@ -361,10 +348,6 @@ from scipy import ndimage as ndi
 from skimage.segmentation import watershed, clear_border
 from skimage.feature import peak_local_max
 
-
-### todo
-    # implement object based segmentation metric :(
-
 ### Example with two overlapping circles
 x, y = np.indices((80,80))
 x1, y1, x2, y2, x3, y3, x4, y4 = 28, 28, 44, 52, 75, 15, 78, 60
@@ -421,25 +404,3 @@ for image in seg_imgs:
     mask[tuple(coords_img.T)] = True
     markers, _ = ndi.label(mask, structure=np.ones((3, 3)))
     labels = watershed(-dist_img, markers, mask=image)
-
-
-## Object Bases Metric Exploration ##
-
-### Test Images
-# We have one segmented-groundtruth pair (01) as pnd with few nuclei and one pair (02) with many nuclei
-# The 01 seg is labeled but overlaps are not separated. 02 seg actually separated overlaps!!!
-    #-> in 02 seg should be better because of separated objects i guess
-# Seg and gt aren't labeled identically meaning the corresponding object doesn't have the same label
-# gt also has border objects removed while seg does not
-test_img = io.imread("segmetrics.py-master/testdata/01_result.png")
-test_img2_gt = io.imread("segmetrics.py-master/testdata/02_groundtruth.tif")
-test_img2 = io.imread("segmetrics.py-master/testdata/02_result.tif")
-
-### Objective
-# so it all works fine for me in the test jupyter
-    # should be easily applicable, maybe even without the magic shit, maybe with them
-# gt and result list should be easily generated by me
-# labeling is done by function if unique = false so I can compare this with labeling through watershed
-    # also compare the false merge, false split shit with and without watershed
-# Maybe I'll have to use less images for the comparison because it took a while for the object-based metric to be computed
-"%a is a trail" % (array2d[0])
