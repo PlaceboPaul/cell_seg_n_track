@@ -26,7 +26,6 @@ import matplotlib.pyplot as plt
 # We don't convert image to 8bit since its not that important and we don't have to worry about quality loss
     # But let's subtract the min value so it starts at 0
 # Don't put all 92 images in an array. Load each in an iteration and override the previous??? I think that's better
-    ## Data Exploration Results ##
 
 
 
@@ -34,7 +33,6 @@ import matplotlib.pyplot as plt
 t000 = io.imread("01/t000.tif"); t000 = t000 - t000.min()
 #gt
 t000_gt = io.imread("01_ST/SEG/man_seg000.tif"); t000_gt = t000_gt > 0
-    ## Reading Data ##
 
 
 
