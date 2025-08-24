@@ -20,7 +20,7 @@ practical usability.
 **Segmentation**: In `segmentation.py`, segmentation approaches based on edge detection, Otsu's method and machine learning (support vector machine) were compared in terms of their performance on the data.
 Ground truth images allowed for evaluation using dice and jaccard scores on a whole image as well as a per-object level using the [*segmetrics*](https://github.com/BMCV/segmetrics) package developed in the BMCV group.
 <p align="center">
-  <img src="https://github.com/PlaceboPaul/bioquant_rohr_internship/blob/main/figures/3_three-methods-cor.png" alt="Three segmentation methods" width="400"/>
+  <img src="figures/3_three-methods-cor.png" alt="Three segmentation methods" width="400"/>
   <br/>
   <span style="font-size:x-small; color:gray;">ST: Silver truth, SVM: Support vector machine</span>
 </p>
@@ -32,5 +32,5 @@ Ground truth images allowed for evaluation using dice and jaccard scores on a wh
 
 **Vizualizatio**: Cell tracking was vizualized and evaluated using the *opencv-python* package. The code is available in `tracking_visuals.py`.
 <p align="center">
-  <img src="https://github.com/PlaceboPaul/bioquant_rohr_internship/blob/main/figures/4_trajectories_cor.png" alt="Cell trajectories" width="100%"/>
+  <img src="figures/4_trajectories_cor.png" alt="Cell trajectories" width="100%"/>
 </p>
